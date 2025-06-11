@@ -8,4 +8,4 @@ Run `python doomsday.py` to practice guessing the weekday for random dates in th
 
 ## Graphical interface
 
-A simple Tkinter GUI is provided in `doomsday_gui.py`. Run `python doomsday_gui.py` and use the weekday buttons to make your guess, or press **Skip** or **Give Up**. The interface keeps a running tally of correct and incorrect answers.
+A simple Tkinter GUI is provided in `doomsday_gui.py`. Run `python doomsday_gui.py` and use the weekday buttons to make your guess, or press **Skip** or **Give Up**. The interface keeps a running tally of correct and incorrect answers. A **Hint** button reveals the century's doomsday on the first click and the year's doomsday on the second.

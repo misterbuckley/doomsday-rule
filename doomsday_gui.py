@@ -7,6 +7,20 @@ from doomsday import get_random_date
 START_DATE = "1700-01-01"
 END_DATE = "2299-12-31"
 
+DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday",
+        "Thursday", "Friday", "Saturday"]
+
+
+def century_anchor(year):
+    """Return the anchor weekday for the given year"""
+    century = year // 100
+    return (5 * (century % 4) + 2) % 7
+
+
+def year_doomsday(year):
+    y = year % 100
+    return (century_anchor(year) + y + y // 4) % 7
+
 
 class DoomsdayGUI:
     def __init__(self, master):
@@ -16,6 +30,7 @@ class DoomsdayGUI:
         self.correct = 0
         self.incorrect = 0
         self.random_date = None
+        self.hint_stage = 0
 
         self.date_label = tk.Label(master, font=("Helvetica", 16))
         self.date_label.pack(pady=10)
@@ -46,6 +61,13 @@ class DoomsdayGUI:
         self.score_label = tk.Label(master, font=("Helvetica", 12))
         self.score_label.pack(pady=5)
 
+        self.hint_button = tk.Button(master, text="Hint", width=10,
+                                     command=self.show_hint)
+        self.hint_button.pack(pady=5)
+
+        self.hint_label = tk.Label(master, font=("Helvetica", 12))
+        self.hint_label.pack(pady=5)
+
         self.next_date()
 
     def next_date(self):
@@ -54,6 +76,8 @@ class DoomsdayGUI:
         self.date_label.config(text=date_str)
         self.message_label.config(text="")
         self.update_score()
+        self.hint_label.config(text="")
+        self.hint_stage = 0
         for btn in self.day_buttons.values():
             btn.config(state=tk.NORMAL)
 
@@ -83,6 +107,19 @@ class DoomsdayGUI:
     def update_score(self):
         self.score_label.config(
             text=f"Correct: {self.correct}    Incorrect: {self.incorrect}")
+
+    def show_hint(self):
+        if self.hint_stage == 0:
+            anchor = DAYS[century_anchor(self.random_date.year)]
+            century = (self.random_date.year // 100) * 100
+            self.hint_label.config(
+                text=f"Century doomsday for {century}s: {anchor}")
+            self.hint_stage = 1
+        elif self.hint_stage == 1:
+            dooms = DAYS[year_doomsday(self.random_date.year)]
+            self.hint_label.config(
+                text=f"Year doomsday for {self.random_date.year}: {dooms}")
+            self.hint_stage = 2
 
 
 def main():
