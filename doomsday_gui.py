@@ -35,8 +35,11 @@ class DoomsdayGUI:
         self.date_label = tk.Label(master, font=("Helvetica", 16))
         self.date_label.pack(pady=10)
 
-        self.days_frame = tk.Frame(master)
-        self.days_frame.pack(pady=5)
+        self.button_area = tk.Frame(master)
+        self.button_area.pack(pady=5)
+
+        self.days_frame = tk.Frame(self.button_area)
+        self.days_frame.pack()
 
         top_row = tk.Frame(self.days_frame)
         top_row.pack(anchor="center")
@@ -53,6 +56,12 @@ class DoomsdayGUI:
             btn.pack(side=tk.LEFT, padx=3, pady=2)
             self.day_buttons[day] = btn
 
+        # Preserve the space used by the weekday buttons
+        self.button_area.update_idletasks()
+        self.button_area.config(width=self.days_frame.winfo_width(),
+                                height=self.days_frame.winfo_height())
+        self.button_area.pack_propagate(False)
+
         control_frame = tk.Frame(master)
         control_frame.pack()
 
@@ -64,7 +73,7 @@ class DoomsdayGUI:
                                        command=self.give_up)
         self.giveup_button.pack(side=tk.LEFT, padx=3, pady=5)
 
-        self.next_button = tk.Button(master, text="Next", width=10,
+        self.next_button = tk.Button(self.button_area, text="Next", width=10,
                                      command=self.next_date)
 
         self.message_label = tk.Label(master, font=("Helvetica", 12))
@@ -91,7 +100,7 @@ class DoomsdayGUI:
         self.hint_label.config(text="")
         self.hint_stage = 0
         self.next_button.pack_forget()
-        self.days_frame.pack(pady=5)
+        self.days_frame.pack(fill=tk.BOTH, expand=True)
         for btn in self.day_buttons.values():
             btn.config(state=tk.NORMAL)
         self.skip_button.config(state=tk.NORMAL)
@@ -112,7 +121,7 @@ class DoomsdayGUI:
         self.days_frame.pack_forget()
         self.skip_button.config(state=tk.DISABLED)
         self.giveup_button.config(state=tk.DISABLED)
-        self.next_button.pack(pady=5)
+        self.next_button.pack(fill=tk.BOTH, expand=True)
 
     def give_up(self):
         day_of_week = self.random_date.strftime("%A")
