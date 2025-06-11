@@ -35,25 +35,37 @@ class DoomsdayGUI:
         self.date_label = tk.Label(master, font=("Helvetica", 16))
         self.date_label.pack(pady=10)
 
-        button_frame = tk.Frame(master)
-        button_frame.pack(pady=5)
+        self.days_frame = tk.Frame(master)
+        self.days_frame.pack(pady=5)
+
+        top_row = tk.Frame(self.days_frame)
+        top_row.pack(anchor="center")
+        bottom_row = tk.Frame(self.days_frame)
+        bottom_row.pack(anchor="center")
 
         self.day_buttons = {}
         days = ["Monday", "Tuesday", "Wednesday", "Thursday",
                 "Friday", "Saturday", "Sunday"]
         for i, day in enumerate(days):
-            btn = tk.Button(button_frame, text=day, width=10,
+            parent = top_row if i < 4 else bottom_row
+            btn = tk.Button(parent, text=day, width=10,
                             command=lambda d=day: self.check_guess(d))
-            btn.grid(row=i // 4, column=i % 4, padx=3, pady=2)
+            btn.pack(side=tk.LEFT, padx=3, pady=2)
             self.day_buttons[day] = btn
 
-        self.skip_button = tk.Button(button_frame, text="Skip", width=10,
-                                     command=self.next_date)
-        self.skip_button.grid(row=2, column=0, padx=3, pady=5, columnspan=2, sticky="we")
+        control_frame = tk.Frame(master)
+        control_frame.pack()
 
-        self.giveup_button = tk.Button(button_frame, text="Give Up", width=10,
+        self.skip_button = tk.Button(control_frame, text="Skip", width=10,
+                                     command=self.next_date)
+        self.skip_button.pack(side=tk.LEFT, padx=3, pady=5)
+
+        self.giveup_button = tk.Button(control_frame, text="Give Up", width=10,
                                        command=self.give_up)
-        self.giveup_button.grid(row=2, column=2, padx=3, pady=5, columnspan=2, sticky="we")
+        self.giveup_button.pack(side=tk.LEFT, padx=3, pady=5)
+
+        self.next_button = tk.Button(master, text="Next", width=10,
+                                     command=self.next_date)
 
         self.message_label = tk.Label(master, font=("Helvetica", 12))
         self.message_label.pack(pady=5)
@@ -78,8 +90,12 @@ class DoomsdayGUI:
         self.update_score()
         self.hint_label.config(text="")
         self.hint_stage = 0
+        self.next_button.pack_forget()
+        self.days_frame.pack(pady=5)
         for btn in self.day_buttons.values():
             btn.config(state=tk.NORMAL)
+        self.skip_button.config(state=tk.NORMAL)
+        self.giveup_button.config(state=tk.NORMAL)
 
     def check_guess(self, guess):
         day_of_week = self.random_date.strftime("%A")
@@ -93,7 +109,10 @@ class DoomsdayGUI:
             self.message_label.config(
                 text=f"Incorrect! It was a {day_of_week}.")
         self.update_score()
-        self.master.after(3000, self.next_date)
+        self.days_frame.pack_forget()
+        self.skip_button.config(state=tk.DISABLED)
+        self.giveup_button.config(state=tk.DISABLED)
+        self.next_button.pack(pady=5)
 
     def give_up(self):
         day_of_week = self.random_date.strftime("%A")
